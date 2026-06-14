@@ -56,9 +56,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Function to update the counter with a scale/bump animation and 4-digit padding
+  // Function to update the counter with a scale/bump animation and standard formatting
   function updateCounterDisplay(value, animate) {
-    const formattedVal = String(value).padStart(4, '0');
+    const formattedVal = value.toLocaleString();
     if (animate) {
       counterEl.classList.add('bump');
       setTimeout(() => {
