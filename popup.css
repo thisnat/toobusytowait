@@ -1,0 +1,289 @@
+/* Claude AI Style Design (Green Accent) */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  width: 320px;
+  background-color: #f9f8f6;
+  color: #191919;
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* App Container */
+.app-container {
+  padding: 20px;
+  background-color: #f9f8f6;
+}
+
+/* Header */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e6e3dd;
+  padding-bottom: 14px;
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Spinning Emoji Animation */
+.logo-icon {
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: spin-emoji 10s linear infinite;
+  transform-origin: center;
+}
+
+@keyframes spin-emoji {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.logo-text h1 {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: #191919;
+  letter-spacing: -0.2px;
+}
+
+.logo-text p.tagline {
+  font-size: 9.5px;
+  color: #7c776e;
+  font-weight: 400;
+}
+
+/* Status Badge */
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: #f1ede4;
+  border: 1px solid #e6e3dd;
+  padding: 3px 8px;
+  border-radius: 20px;
+}
+
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  background-color: #2e7d32;
+  border-radius: 50%;
+  animation: pulse-dot 2s infinite ease-in-out;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.badge-text {
+  font-size: 9px;
+  font-weight: 600;
+  color: #5c574f;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Stats Card (Claude style Editorial card) */
+.stats-card {
+  position: relative;
+  background-color: #ffffff;
+  border: 1px solid #e6e3dd;
+  border-left: 3px solid #2e7d32;
+  border-radius: 8px;
+  padding: 16px 18px;
+  margin-bottom: 18px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stats-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(25, 25, 25, 0.05);
+}
+
+.stats-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stats-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stats-label {
+  font-size: 9px;
+  font-weight: 600;
+  color: #7c776e;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.stats-content h2 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 30px;
+  font-weight: 700;
+  color: #191919;
+  line-height: 1.1;
+  transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.stats-content h2.bump {
+  transform: scale(1.1);
+  color: #2e7d32;
+}
+
+.icon-btn {
+  background: #f9f8f6;
+  border: 1px solid #e6e3dd;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7c776e;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.icon-btn:hover {
+  background: #f1ede4;
+  color: #2e7d32;
+  border-color: #2e7d32;
+}
+
+.reset-icon {
+  width: 14px;
+  height: 14px;
+}
+
+/* Parameters Container */
+.options-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.param-header {
+  font-size: 10px;
+  font-weight: 600;
+  color: #7c776e;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+.option-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  background-color: #ffffff;
+  border: 1px solid #e6e3dd;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  transition: all 0.2s ease;
+}
+
+.option-row:hover {
+  border-color: #c4c1ba;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(25, 25, 25, 0.03);
+}
+
+.option-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 75%;
+}
+
+.option-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #191919;
+}
+
+.option-desc {
+  font-size: 9.5px;
+  color: #7c776e;
+  line-height: 1.3;
+}
+
+/* Forest Green iOS Switch */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #e6e3dd;
+  transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 34px;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #ffffff;
+  transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(25, 25, 25, 0.1);
+}
+
+input:checked + .toggle-slider {
+  background-color: #2e7d32;
+}
+
+input:checked + .toggle-slider:before {
+  transform: translateX(18px);
+}
+
+/* Footer */
+.app-footer {
+  margin-top: 20px;
+  border-top: 1px solid #e6e3dd;
+  padding-top: 12px;
+  text-align: center;
+}
+
+.app-footer span {
+  font-size: 9.5px;
+  color: #a19c91;
+  font-weight: 500;
+}

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>toobusytowait</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <!-- Spinning lightning emoji as requested -->
+        <div class="logo-icon">⚡</div>
+        <div class="logo-text">
+          <h1>toobusytowait</h1>
+          <p class="tagline">YouTube Ad Accelerator</p>
+        </div>
+      </div>
+      <div class="status-badge">
+        <span class="badge-dot"></span>
+        <span class="badge-text">Active</span>
+      </div>
+    </header>
+
+    <!-- Stats Card (Claude style paper card) -->
+    <section class="stats-card">
+      <div class="stats-content">
+        <div class="stats-info">
+          <span class="stats-label">Total Ads Bypassed</span>
+          <h2 id="skipped-counter">0000</h2>
+        </div>
+        <button id="reset-counter" title="Reset Statistics" class="icon-btn">
+          <svg viewBox="0 0 24 24" class="reset-icon">
+            <path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- Settings Parameters -->
+    <main class="options-container">
+      <div class="param-header">Preferences</div>
+
+      <!-- Option Item -->
+      <div class="option-row">
+        <div class="option-info">
+          <span class="option-title">Auto-Click Skip</span>
+          <span class="option-desc">Automatically clicks the skip button</span>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="toggle-auto-skip" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <!-- Option Item -->
+      <div class="option-row">
+        <div class="option-info">
+          <span class="option-title">16x Speed-Up</span>
+          <span class="option-desc">Speeds through ads immediately</span>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="toggle-speed-up" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <!-- Option Item -->
+      <div class="option-row">
+        <div class="option-info">
+          <span class="option-title">Mute Audio</span>
+          <span class="option-desc">Mutes the video player during ads</span>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="toggle-mute" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <!-- Option Item -->
+      <div class="option-row">
+        <div class="option-info">
+          <span class="option-title">Remove Overlays</span>
+          <span class="option-desc">Closes overlay banner advertisements</span>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="toggle-banners" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <span>toobusytowait v1.0.0</span>
+    </footer>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
