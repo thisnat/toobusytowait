@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const speedUpToggle = document.getElementById('toggle-speed-up');
   const muteToggle = document.getElementById('toggle-mute');
   const bannersToggle = document.getElementById('toggle-banners');
+  const soundToggle = document.getElementById('toggle-sound');
   const counterEl = document.getElementById('skipped-counter');
   const resetBtn = document.getElementById('reset-counter');
 
@@ -13,12 +14,14 @@ document.addEventListener('DOMContentLoaded', () => {
     speedUp: true,
     muteAds: true,
     closeBanners: true,
+    playSkipSound: true,
     totalSkipped: 0
   }, (items) => {
     autoSkipToggle.checked = items.autoSkip;
     speedUpToggle.checked = items.speedUp;
     muteToggle.checked = items.muteAds;
     bannersToggle.checked = items.closeBanners;
+    soundToggle.checked = items.playSkipSound;
     
     // Set counter with a smooth entry animation
     updateCounterDisplay(items.totalSkipped, false);
@@ -40,6 +43,24 @@ document.addEventListener('DOMContentLoaded', () => {
   bannersToggle.addEventListener('change', () => {
     chrome.storage.local.set({ closeBanners: bannersToggle.checked });
   });
+
+  soundToggle.addEventListener('change', () => {
+    chrome.storage.local.set({ playSkipSound: soundToggle.checked });
+  });
+
+  // Preview sound effect
+  const previewSoundBtn = document.getElementById('preview-sound');
+  if (previewSoundBtn) {
+    previewSoundBtn.addEventListener('click', () => {
+      try {
+        const audio = new Audio('skip_sound.mp3');
+        audio.volume = 0.4;
+        audio.play().catch((e) => console.log("Sound preview play failed:", e));
+      } catch (e) {
+        console.log("Sound preview error:", e);
+      }
+    });
+  }
 
   // Reset counter logic
   resetBtn.addEventListener('click', () => {

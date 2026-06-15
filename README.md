@@ -2,7 +2,7 @@
 
 Because watching 5 seconds of a laundry detergent commercial is a grave violation of your basic human rights.
 
-This extension speeds up YouTube ads to 16x, mutes them, and clicks the "Skip" button immediately—saving you a combined total of 12 seconds per day. Go use that extra time to contemplate your life choices.
+This extension speeds up YouTube ads to 16x, mutes them, clicks the "Skip" button immediately, and plays a auditory treat—saving you a combined total of 12 seconds per day. Go use that extra time to contemplate your life choices.
 
 ---
 
@@ -12,6 +12,7 @@ This extension speeds up YouTube ads to 16x, mutes them, and clicks the "Skip" b
 * **16x Speed-up**: Bypasses ads in milliseconds, because god forbid you have to wait for anything in your fast-paced, high-importance life.
 * **Auto-Mute**: Silences ad audio so you aren't startled by high-speed corporate jingles.
 * **Remove Overlays**: Erases overlay banner ads to prevent them from distracting you from your high-quality, brain-rotting YouTube content.
+* **Skip Sound Effect**: Plays a brief sound when an ad is skipped, giving you a dopamine hit to celebrate your micro-victory over capitalism. Includes a preview button in the popup so you can spam it when you're bored.
 
 ---
 

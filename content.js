@@ -3,7 +3,8 @@ let settings = {
   autoSkip: true,
   speedUp: true,
   muteAds: true,
-  closeBanners: true
+  closeBanners: true,
+  playSkipSound: true
 };
 
 // Capture native browser HTMLMediaElement descriptors before YouTube overrides them
@@ -46,7 +47,7 @@ let lastVideoEl = null;
 let lastAdSrc = '';
 
 // Load settings from storage
-chrome.storage.local.get(['autoSkip', 'speedUp', 'muteAds', 'closeBanners'], (result) => {
+chrome.storage.local.get(['autoSkip', 'speedUp', 'muteAds', 'closeBanners', 'playSkipSound'], (result) => {
   settings = { ...settings, ...result };
 });
 
@@ -86,6 +87,20 @@ function incrementSkipCount() {
   });
 }
 
+// Play sound effect when skipping an ad
+function playSkipSound() {
+  if (!settings.playSkipSound) return;
+  try {
+    const audioUrl = chrome.runtime.getURL('skip_sound.mp3');
+    const audio = new Audio(audioUrl);
+    audio.volume = 0.4;
+    audio.play().catch((e) => console.log("[toobusytowait] Sound play failed:", e));
+  } catch (e) {
+    console.log("[toobusytowait] Sound play error:", e);
+  }
+}
+
+
 // Target extension skip button classes list
 const skipButtonClasses = [
   "videoAdUiSkipButton",
@@ -94,15 +109,39 @@ const skipButtonClasses = [
   "ytp-skip-ad-button",
 ];
 
+function isVisible(el) {
+  if (!el) return false;
+  try {
+    const style = window.getComputedStyle(el);
+    if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') {
+      return false;
+    }
+    return !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
+  } catch (e) {
+    return false;
+  }
+}
+
 function clickSkipAdBtn() {
   const elems = getElementsByClassNames(skipButtonClasses);
   let clicked = false;
   if (elems.length > 0) {
     elems.forEach((el) => {
-      clickElem(el);
-      el.click();
-      clicked = true;
+      if (isVisible(el)) {
+        clickElem(el);
+        el.click();
+        clicked = true;
+      }
     });
+
+    if (clicked) {
+      // Reset playback rate and mute state immediately to prevent main video buffering delay
+      const video = document.querySelector('video.html5-main-video');
+      if (video) {
+        setVideoPlaybackRate(video, userPlaybackRate);
+        setVideoMuted(video, userMutedState);
+      }
+    }
   }
   return clicked;
 }
@@ -186,6 +225,7 @@ function handleAds() {
       const clicked = clickSkipAdBtn();
       if (clicked) {
         incrementSkipCount();
+        playSkipSound();
       }
     }
 
@@ -231,6 +271,11 @@ function setupVideoListeners(video) {
     if (isAdActive && settings.muteAds && !video.muted) {
       setVideoMuted(video, true);
     }
+  });
+
+  // Listen for loadstart to catch transitions immediately and reset settings
+  video.addEventListener('loadstart', () => {
+    handleAds();
   });
 }
 
