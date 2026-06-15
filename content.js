@@ -7,6 +7,8 @@ let settings = {
   playSkipSound: true
 };
 
+let adCheckInterval;
+
 // Capture native browser HTMLMediaElement descriptors before YouTube overrides them
 const nativePlaybackRateSetter = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'playbackRate')?.set;
 const nativeMutedSetter = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'muted')?.set;
@@ -81,8 +83,11 @@ function getElementsByClassNames(classNames) {
 // Increment skip counter
 function incrementSkipCount() {
   if (adSkippedIncremented) return;
+  if (typeof chrome === 'undefined' || !chrome.storage || !chrome.storage.local) return;
+  
   adSkippedIncremented = true;
   chrome.storage.local.get({ totalSkipped: 0 }, (result) => {
+    if (typeof chrome === 'undefined' || !chrome.storage || !chrome.storage.local) return;
     chrome.storage.local.set({ totalSkipped: result.totalSkipped + 1 });
   });
 }
@@ -167,6 +172,14 @@ function checkAdActive(player) {
 
 // Main function to check and handle ads
 function handleAds() {
+  // Clear checker interval and stop if extension context is invalidated
+  if (typeof chrome === 'undefined' || !chrome.runtime || !chrome.runtime.id) {
+    if (adCheckInterval) {
+      clearInterval(adCheckInterval);
+    }
+    return;
+  }
+
   const video = document.querySelector('video.html5-main-video');
   const player = document.querySelector('.html5-video-player');
   
@@ -280,4 +293,4 @@ function setupVideoListeners(video) {
 }
 
 // Run the checker on a high-frequency interval (200ms) for instant detection
-setInterval(handleAds, 200);
+adCheckInterval = setInterval(handleAds, 200);
