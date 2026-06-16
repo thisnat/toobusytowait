@@ -196,6 +196,10 @@ function handleAds() {
   if (currentAdActive) {
     // Ad has started or transitioned to a consecutive ad
     if (!isAdActive || (video.src && video.src !== lastAdSrc)) {
+      if (isAdActive && !adSkippedIncremented) {
+        incrementSkipCount();
+        playSkipSound();
+      }
       isAdActive = true;
       lastAdSrc = video.src || '';
       adSkippedIncremented = false;
@@ -250,6 +254,10 @@ function handleAds() {
   } else {
     // No ad is active
     if (isAdActive) {
+      if (!adSkippedIncremented) {
+        incrementSkipCount();
+        playSkipSound();
+      }
       isAdActive = false;
       lastAdSrc = '';
       
