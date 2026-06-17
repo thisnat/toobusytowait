@@ -8,6 +8,7 @@ let settings = {
 };
 
 let adCheckInterval;
+let playerObserver = null;
 
 // Capture native browser HTMLMediaElement descriptors before YouTube overrides them
 const nativePlaybackRateSetter = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'playbackRate')?.set;
@@ -130,24 +131,13 @@ function isVisible(el) {
 function clickSkipAdBtn() {
   const elems = getElementsByClassNames(skipButtonClasses);
   let clicked = false;
-  if (elems.length > 0) {
-    elems.forEach((el) => {
-      if (isVisible(el)) {
-        clickElem(el);
-        el.click();
-        clicked = true;
-      }
-    });
-
-    if (clicked) {
-      // Reset playback rate and mute state immediately to prevent main video buffering delay
-      const video = document.querySelector('video.html5-main-video');
-      if (video) {
-        setVideoPlaybackRate(video, userPlaybackRate);
-        setVideoMuted(video, userMutedState);
-      }
+  elems.forEach((el) => {
+    if (isVisible(el)) {
+      clickElem(el);
+      el.click();
+      clicked = true;
     }
-  }
+  });
   return clicked;
 }
 
@@ -177,6 +167,9 @@ function handleAds() {
     if (adCheckInterval) {
       clearInterval(adCheckInterval);
     }
+    if (playerObserver) {
+      playerObserver.disconnect();
+    }
     return;
   }
 
@@ -184,6 +177,11 @@ function handleAds() {
   const player = document.querySelector('.html5-video-player');
   
   if (!video || !player) return;
+
+  // Setup MutationObserver on player classes to capture ad transitions instantly
+  if (!playerObserver) {
+    setupPlayerObserver(player);
+  }
 
   // Track the video element dynamic lifecycle
   if (video !== lastVideoEl) {
@@ -213,11 +211,28 @@ function handleAds() {
 
     // Apply speed up if enabled (safe, native speed up without modifying currentTime directly)
     if (settings.speedUp) {
-      if (video.playbackRate !== 16) {
-        setVideoPlaybackRate(video, 16);
+      if (adSkippedIncremented) {
+        // Force normal playback rate immediately if ad is already skipped/being skipped
+        if (video.playbackRate !== userPlaybackRate) {
+          setVideoPlaybackRate(video, userPlaybackRate);
+        }
+      } else {
+        const remainingTime = video.duration - video.currentTime;
+        // If the ad is about to end naturally (remaining time < 1 second), reset speed to 1x
+        // to allow the player to pre-buffer the main video at 1x speed and prevent black screen delays
+        if (isFinite(video.duration) && video.duration > 0 && remainingTime < 1.0) {
+          if (video.playbackRate !== userPlaybackRate) {
+            setVideoPlaybackRate(video, userPlaybackRate);
+          }
+        } else {
+          if (video.playbackRate !== 16) {
+            setVideoPlaybackRate(video, 16);
+          }
+        }
       }
-      // Ensure the video is playing
-      if (video.paused) {
+      
+      // Ensure the video is playing (only if we haven't skipped yet)
+      if (video.paused && !adSkippedIncremented) {
         try {
           if (nativePlay) {
             nativePlay.call(video).catch(() => {});
@@ -232,17 +247,43 @@ function handleAds() {
 
     // Apply mute if enabled
     if (settings.muteAds) {
-      if (!video.muted) {
-        setVideoMuted(video, true);
+      if (adSkippedIncremented) {
+        // Restore normal volume state immediately
+        if (video.muted !== userMutedState) {
+          setVideoMuted(video, userMutedState);
+        }
+      } else {
+        if (!video.muted) {
+          setVideoMuted(video, true);
+        }
       }
     }
 
     // Try to click the skip button
-    if (settings.autoSkip) {
-      const clicked = clickSkipAdBtn();
-      if (clicked) {
-        incrementSkipCount();
-        playSkipSound();
+    if (settings.autoSkip && !adSkippedIncremented) {
+      const elems = getElementsByClassNames(skipButtonClasses);
+      const hasVisibleButton = elems.some(el => isVisible(el));
+      
+      if (hasVisibleButton) {
+        // 1. Mark as skipped early to lock the state and prevent further 16x updates
+        adSkippedIncremented = true;
+        
+        // 2. Reset playback rate and mute state immediately to stabilize the media pipeline
+        setVideoPlaybackRate(video, userPlaybackRate);
+        setVideoMuted(video, userMutedState);
+        
+        // 3. Defer the click by 150ms to give the browser's audio/video rendering thread
+        // enough time to stabilize at 1x speed before YouTube switches the source
+        setTimeout(() => {
+          const clicked = clickSkipAdBtn();
+          if (clicked) {
+            incrementSkipCount();
+            playSkipSound();
+          } else {
+            // If clicking failed or button disappeared, reset the flag so we can try again
+            adSkippedIncremented = false;
+          }
+        }, 150);
       }
     }
 
@@ -284,19 +325,40 @@ function setupVideoListeners(video) {
   // Prevent YouTube from resetting the speed/mute during ads by re-applying the native setter
   video.addEventListener('ratechange', () => {
     if (isAdActive && settings.speedUp && video.playbackRate !== 16) {
-      setVideoPlaybackRate(video, 16);
+      handleAds();
+      if (isAdActive && video.playbackRate !== 16) {
+        setVideoPlaybackRate(video, 16);
+      }
     }
   });
 
+  // Listen for volume changes to re-apply mute during ads
   video.addEventListener('volumechange', () => {
     if (isAdActive && settings.muteAds && !video.muted) {
-      setVideoMuted(video, true);
+      handleAds();
+      if (isAdActive && !video.muted) {
+        setVideoMuted(video, true);
+      }
     }
   });
 
   // Listen for loadstart to catch transitions immediately and reset settings
   video.addEventListener('loadstart', () => {
     handleAds();
+  });
+}
+
+function setupPlayerObserver(player) {
+  if (!player) return;
+  if (playerObserver) {
+    playerObserver.disconnect();
+  }
+  playerObserver = new MutationObserver(() => {
+    handleAds();
+  });
+  playerObserver.observe(player, {
+    attributes: true,
+    attributeFilter: ['class']
   });
 }
 
