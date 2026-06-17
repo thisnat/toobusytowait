@@ -4,7 +4,8 @@ let settings = {
   speedUp: true,
   muteAds: true,
   closeBanners: true,
-  playSkipSound: true
+  playSkipSound: true,
+  playHitmarker: true
 };
 
 let adCheckInterval;
@@ -50,7 +51,7 @@ let lastVideoEl = null;
 let lastAdSrc = '';
 
 // Load settings from storage
-chrome.storage.local.get(['autoSkip', 'speedUp', 'muteAds', 'closeBanners', 'playSkipSound'], (result) => {
+chrome.storage.local.get(['autoSkip', 'speedUp', 'muteAds', 'closeBanners', 'playSkipSound', 'playHitmarker'], (result) => {
   settings = { ...settings, ...result };
 });
 
@@ -104,6 +105,87 @@ function playSkipSound() {
   } catch (e) {
     console.log("[toobusytowait] Sound play error:", e);
   }
+}
+
+// Play hitmarker sound effect
+function playHitmarkerSound() {
+  if (!settings.playHitmarker) return;
+  try {
+    const audioUrl = chrome.runtime.getURL('hitmarker.mp3');
+    const audio = new Audio(audioUrl);
+    audio.volume = 0.6;
+    audio.play().catch((e) => console.log("[toobusytowait] Hitmarker sound play failed:", e));
+  } catch (e) {
+    console.log("[toobusytowait] Hitmarker sound error:", e);
+  }
+}
+
+// Inject hitmarker CSS styles into the page
+function injectHitmarkerStyles() {
+  if (document.getElementById('cod-hitmarker-styles')) return;
+  const style = document.createElement('style');
+  style.id = 'cod-hitmarker-styles';
+  style.textContent = `
+    .cod-hitmarker-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 2147483647;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: hitmarker-fade-out 0.25s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+    }
+    @keyframes hitmarker-fade-out {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.4);
+      }
+      15% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.0);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.9);
+      }
+    }
+  `;
+  (document.head || document.documentElement).appendChild(style);
+}
+
+// Show COD hitmarker overlay and play its sound
+function showHitmarker() {
+  if (!settings.playHitmarker) return;
+  
+  // Play sound
+  playHitmarkerSound();
+  
+  // Render visual effect
+  const player = document.querySelector('.html5-video-player');
+  if (!player) return;
+  
+  injectHitmarkerStyles();
+  
+  const hitmarker = document.createElement('div');
+  hitmarker.className = 'cod-hitmarker-container';
+  hitmarker.innerHTML = `
+    <svg width="32" height="32" viewBox="0 0 32 32" style="filter: drop-shadow(0px 0px 1.5px rgba(0,0,0,0.85));">
+      <line x1="6" y1="6" x2="12" y2="12" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="26" y1="6" x2="20" y2="12" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="6" y1="26" x2="12" y2="20" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="26" y1="26" x2="20" y2="20" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>
+  `;
+  
+  player.appendChild(hitmarker);
+  
+  // Clean up element after animation completes
+  setTimeout(() => {
+    hitmarker.remove();
+  }, 260);
 }
 
 
@@ -197,6 +279,7 @@ function handleAds() {
       if (isAdActive && !adSkippedIncremented) {
         incrementSkipCount();
         playSkipSound();
+        showHitmarker();
       }
       isAdActive = true;
       lastAdSrc = video.src || '';
@@ -279,6 +362,7 @@ function handleAds() {
           if (clicked) {
             incrementSkipCount();
             playSkipSound();
+            showHitmarker();
           } else {
             // If clicking failed or button disappeared, reset the flag so we can try again
             adSkippedIncremented = false;
@@ -298,6 +382,7 @@ function handleAds() {
       if (!adSkippedIncremented) {
         incrementSkipCount();
         playSkipSound();
+        showHitmarker();
       }
       isAdActive = false;
       lastAdSrc = '';

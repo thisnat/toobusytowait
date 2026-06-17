@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const muteToggle = document.getElementById('toggle-mute');
   const bannersToggle = document.getElementById('toggle-banners');
   const soundToggle = document.getElementById('toggle-sound');
+  const hitmarkerToggle = document.getElementById('toggle-hitmarker');
   const counterEl = document.getElementById('skipped-counter');
   const resetBtn = document.getElementById('reset-counter');
 
@@ -15,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     muteAds: true,
     closeBanners: true,
     playSkipSound: true,
+    playHitmarker: true,
     totalSkipped: 0
   }, (items) => {
     autoSkipToggle.checked = items.autoSkip;
@@ -22,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     muteToggle.checked = items.muteAds;
     bannersToggle.checked = items.closeBanners;
     soundToggle.checked = items.playSkipSound;
+    hitmarkerToggle.checked = items.playHitmarker;
     
     // Set counter with a smooth entry animation
     updateCounterDisplay(items.totalSkipped, false);
@@ -48,6 +51,10 @@ document.addEventListener('DOMContentLoaded', () => {
     chrome.storage.local.set({ playSkipSound: soundToggle.checked });
   });
 
+  hitmarkerToggle.addEventListener('change', () => {
+    chrome.storage.local.set({ playHitmarker: hitmarkerToggle.checked });
+  });
+
   // Preview sound effect
   const previewSoundBtn = document.getElementById('preview-sound');
   if (previewSoundBtn) {
@@ -58,6 +65,20 @@ document.addEventListener('DOMContentLoaded', () => {
         audio.play().catch((e) => console.log("Sound preview play failed:", e));
       } catch (e) {
         console.log("Sound preview error:", e);
+      }
+    });
+  }
+
+  // Preview hitmarker effect
+  const previewHitmarkerBtn = document.getElementById('preview-hitmarker');
+  if (previewHitmarkerBtn) {
+    previewHitmarkerBtn.addEventListener('click', () => {
+      try {
+        const audio = new Audio('hitmarker.mp3');
+        audio.volume = 0.4;
+        audio.play().catch((e) => console.log("Hitmarker preview play failed:", e));
+      } catch (e) {
+        console.log("Hitmarker preview error:", e);
       }
     });
   }
