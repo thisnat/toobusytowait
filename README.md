@@ -14,6 +14,8 @@ This extension speeds up YouTube ads to 16x, mutes them, clicks the "Skip" butto
 * **Remove Overlays**: Erases overlay banner ads to prevent them from distracting you from your high-quality, brain-rotting YouTube content.
 * **Skip Sound Effect**: Plays a brief sound when an ad is skipped, giving you a dopamine hit to celebrate your micro-victory over capitalism. Includes a preview button in the popup so you can spam it when you're bored.
 * **COD Hitmarkers**: Renders a Call of Duty style hitmarker overlay alongside the classic tick sound when an ad is auto-skipped, letting you experience the sweet satisfaction of an absolute headshot against modern advertising. Includes a preview button for that sweet tactical feedback.
+* **Sniper Overlay**: Triggers a transparent green-screen-removed sniper overlay video and audio effect when ads skip, allowing you to absolutely obliterate advertising from existence in style. Includes a preview button to sound off.
+
 
 
 ---

@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const bannersToggle = document.getElementById('toggle-banners');
   const soundToggle = document.getElementById('toggle-sound');
   const hitmarkerToggle = document.getElementById('toggle-hitmarker');
+  const sniperToggle = document.getElementById('toggle-sniper');
   const counterEl = document.getElementById('skipped-counter');
   const resetBtn = document.getElementById('reset-counter');
 
@@ -17,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     closeBanners: true,
     playSkipSound: true,
     playHitmarker: true,
+    playSniper: true,
     totalSkipped: 0
   }, (items) => {
     autoSkipToggle.checked = items.autoSkip;
@@ -25,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     bannersToggle.checked = items.closeBanners;
     soundToggle.checked = items.playSkipSound;
     hitmarkerToggle.checked = items.playHitmarker;
+    sniperToggle.checked = items.playSniper;
     
     // Set counter with a smooth entry animation
     updateCounterDisplay(items.totalSkipped, false);
@@ -55,6 +58,10 @@ document.addEventListener('DOMContentLoaded', () => {
     chrome.storage.local.set({ playHitmarker: hitmarkerToggle.checked });
   });
 
+  sniperToggle.addEventListener('change', () => {
+    chrome.storage.local.set({ playSniper: sniperToggle.checked });
+  });
+
   // Preview sound effect
   const previewSoundBtn = document.getElementById('preview-sound');
   if (previewSoundBtn) {
@@ -79,6 +86,20 @@ document.addEventListener('DOMContentLoaded', () => {
         audio.play().catch((e) => console.log("Hitmarker preview play failed:", e));
       } catch (e) {
         console.log("Hitmarker preview error:", e);
+      }
+    });
+  }
+
+  // Preview sniper effect
+  const previewSniperBtn = document.getElementById('preview-sniper');
+  if (previewSniperBtn) {
+    previewSniperBtn.addEventListener('click', () => {
+      try {
+        const audio = new Audio('sniper.webm');
+        audio.volume = 0.5;
+        audio.play().catch((e) => console.log("Sniper preview play failed:", e));
+      } catch (e) {
+        console.log("Sniper preview error:", e);
       }
     });
   }

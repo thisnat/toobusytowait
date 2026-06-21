@@ -5,7 +5,8 @@ let settings = {
   muteAds: true,
   closeBanners: true,
   playSkipSound: true,
-  playHitmarker: true
+  playHitmarker: true,
+  playSniper: true
 };
 
 let adCheckInterval;
@@ -51,7 +52,7 @@ let lastVideoEl = null;
 let lastAdSrc = '';
 
 // Load settings from storage
-chrome.storage.local.get(['autoSkip', 'speedUp', 'muteAds', 'closeBanners', 'playSkipSound', 'playHitmarker'], (result) => {
+chrome.storage.local.get(['autoSkip', 'speedUp', 'muteAds', 'closeBanners', 'playSkipSound', 'playHitmarker', 'playSniper'], (result) => {
   settings = { ...settings, ...result };
 });
 
@@ -188,6 +189,51 @@ function showHitmarker() {
   }, 260);
 }
 
+// Show green-screen sniper overlay video and play its audio track
+function showSniperOverlay() {
+  if (!settings.playSniper) return;
+  
+  const player = document.querySelector('.html5-video-player');
+  if (!player) return;
+  
+  const videoEl = document.createElement('video');
+  videoEl.src = chrome.runtime.getURL('sniper.webm');
+  videoEl.style.position = 'absolute';
+  videoEl.style.top = '0';
+  videoEl.style.left = '0';
+  videoEl.style.width = '100%';
+  videoEl.style.height = '100%';
+  videoEl.style.zIndex = '2147483646';
+  videoEl.style.pointerEvents = 'none';
+  videoEl.style.objectFit = 'contain';
+  
+  // Play video with audio matching player's current volume
+  try {
+    const mainVideo = document.querySelector('video.html5-main-video');
+    if (mainVideo) {
+      videoEl.volume = mainVideo.volume;
+    } else {
+      videoEl.volume = 0.5;
+    }
+  } catch (e) {
+    videoEl.volume = 0.5;
+  }
+  
+  player.appendChild(videoEl);
+  videoEl.play().catch((e) => console.log("[toobusytowait] Sniper overlay play failed:", e));
+  
+  videoEl.onended = () => {
+    videoEl.remove();
+  };
+  
+  // Backup cleanup
+  setTimeout(() => {
+    if (videoEl.parentNode) {
+      videoEl.remove();
+    }
+  }, 3000);
+}
+
 
 // Target extension skip button classes list
 const skipButtonClasses = [
@@ -280,6 +326,7 @@ function handleAds() {
         incrementSkipCount();
         playSkipSound();
         showHitmarker();
+        showSniperOverlay();
       }
       isAdActive = true;
       lastAdSrc = video.src || '';
@@ -363,6 +410,7 @@ function handleAds() {
             incrementSkipCount();
             playSkipSound();
             showHitmarker();
+            showSniperOverlay();
           } else {
             // If clicking failed or button disappeared, reset the flag so we can try again
             adSkippedIncremented = false;
@@ -383,6 +431,7 @@ function handleAds() {
         incrementSkipCount();
         playSkipSound();
         showHitmarker();
+        showSniperOverlay();
       }
       isAdActive = false;
       lastAdSrc = '';
