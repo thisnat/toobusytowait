@@ -347,17 +347,8 @@ function handleAds() {
           setVideoPlaybackRate(video, userPlaybackRate);
         }
       } else {
-        const remainingTime = video.duration - video.currentTime;
-        // If the ad is about to end naturally (remaining time < 1 second), reset speed to 1x
-        // to allow the player to pre-buffer the main video at 1x speed and prevent black screen delays
-        if (isFinite(video.duration) && video.duration > 0 && remainingTime < 1.0) {
-          if (video.playbackRate !== userPlaybackRate) {
-            setVideoPlaybackRate(video, userPlaybackRate);
-          }
-        } else {
-          if (video.playbackRate !== 16) {
-            setVideoPlaybackRate(video, 16);
-          }
+        if (video.playbackRate !== 16) {
+          setVideoPlaybackRate(video, 16);
         }
       }
       
