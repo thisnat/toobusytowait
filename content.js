@@ -6,7 +6,8 @@ let settings = {
   closeBanners: true,
   playSkipSound: true,
   playHitmarker: true,
-  playSniper: true
+  playSniper: true,
+  incognitoOnly: false
 };
 
 let adCheckInterval;
@@ -52,7 +53,7 @@ let lastVideoEl = null;
 let lastAdSrc = '';
 
 // Load settings from storage
-chrome.storage.local.get(['autoSkip', 'speedUp', 'muteAds', 'closeBanners', 'playSkipSound', 'playHitmarker', 'playSniper'], (result) => {
+chrome.storage.local.get(['autoSkip', 'speedUp', 'muteAds', 'closeBanners', 'playSkipSound', 'playHitmarker', 'playSniper', 'incognitoOnly'], (result) => {
   settings = { ...settings, ...result };
 });
 
@@ -290,6 +291,12 @@ function checkAdActive(player) {
 
 // Main function to check and handle ads
 function handleAds() {
+  // If incognitoOnly is enabled, do absolutely nothing unless we are in an incognito window
+  const isIncognito = (typeof chrome !== 'undefined' && chrome.extension && chrome.extension.inIncognitoContext);
+  if (settings.incognitoOnly && !isIncognito) {
+    return;
+  }
+
   // Clear checker interval and stop if extension context is invalidated
   if (typeof chrome === 'undefined' || !chrome.runtime || !chrome.runtime.id) {
     if (adCheckInterval) {

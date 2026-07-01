@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const soundToggle = document.getElementById('toggle-sound');
   const hitmarkerToggle = document.getElementById('toggle-hitmarker');
   const sniperToggle = document.getElementById('toggle-sniper');
+  const incognitoOnlyToggle = document.getElementById('toggle-incognito-only');
   const counterEl = document.getElementById('skipped-counter');
   const resetBtn = document.getElementById('reset-counter');
 
@@ -19,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     playSkipSound: true,
     playHitmarker: true,
     playSniper: true,
+    incognitoOnly: false,
     totalSkipped: 0
   }, (items) => {
     autoSkipToggle.checked = items.autoSkip;
@@ -28,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
     soundToggle.checked = items.playSkipSound;
     hitmarkerToggle.checked = items.playHitmarker;
     sniperToggle.checked = items.playSniper;
+    incognitoOnlyToggle.checked = items.incognitoOnly;
     
     // Set counter with a smooth entry animation
     updateCounterDisplay(items.totalSkipped, false);
@@ -60,6 +63,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   sniperToggle.addEventListener('change', () => {
     chrome.storage.local.set({ playSniper: sniperToggle.checked });
+  });
+
+  incognitoOnlyToggle.addEventListener('change', () => {
+    chrome.storage.local.set({ incognitoOnly: incognitoOnlyToggle.checked });
   });
 
   // Preview sound effect
